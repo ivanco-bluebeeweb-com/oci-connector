@@ -1,0 +1,2868 @@
+{
+  "manifest_schema_version": 3,
+  "sdk_version": "5.11.0",
+  "app_id": "oci-connector",
+  "version": "0.1.0",
+  "name": "Oracle Cloud Infrastructure",
+  "description": "Connect your own Oracle Cloud Infrastructure tenancy (API signing key, OCI Request Signing RSA-SHA256) to see and manage Compute instances, Object Storage buckets/objects, Autonomous Database systems, IAM users/groups, Monitoring alarms, and Usage/Cost reports from Imperal. Your API key is verified against your tenancy before it's saved. Scoped to the operational core -- OKE, Data Science/GenAI and Oracle Analytics Cloud are out of scope.",
+  "icon": "icon.svg",
+  "actions_explicit": true,
+  "system": false,
+  "capabilities": [
+    "oci:read",
+    "oci:write"
+  ],
+  "tools": [
+    {
+      "name": "connect_oci",
+      "description": "Connect your own Oracle Cloud Infrastructure tenancy by saving an API signing key (tenancy OCID + user OCID + fingerprint + private key) plus your home region, after checking it actually works via a harmless Identity read. A Read-only IAM policy is strongly recommended for the user you create.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "oci.provider.connected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "tenancy_ocid": {
+            "description": "Your OCI tenancy OCID, e.g. ocid1.tenancy.oc1..aaaa...",
+            "title": "Tenancy Ocid",
+            "type": "string"
+          },
+          "user_ocid": {
+            "description": "Your OCI user OCID, e.g. ocid1.user.oc1..aaaa...",
+            "title": "User Ocid",
+            "type": "string"
+          },
+          "fingerprint": {
+            "description": "The fingerprint of your API signing key, e.g. aa:bb:cc:dd:...",
+            "title": "Fingerprint",
+            "type": "string"
+          },
+          "private_key": {
+            "description": "The PEM contents of your API signing key's private key.",
+            "title": "Private Key",
+            "type": "string"
+          },
+          "region": {
+            "description": "Your home region, e.g. us-ashburn-1.",
+            "title": "Region",
+            "type": "string"
+          },
+          "compartment_ocid": {
+            "default": "",
+            "description": "Optional compartment to scope reads to; leave empty to use the tenancy root compartment.",
+            "title": "Compartment Ocid",
+            "type": "string"
+          },
+          "label": {
+            "default": "",
+            "description": "Optional friendly name for this OCI tenancy connection.",
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tenancy_ocid",
+          "user_ocid",
+          "fingerprint",
+          "private_key",
+          "region"
+        ],
+        "title": "ConnectOciParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connected": {
+            "default": false,
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "detail": {
+            "default": "",
+            "title": "Detail",
+            "type": "string"
+          },
+          "tenancy_ocid": {
+            "default": "",
+            "title": "Tenancy Ocid",
+            "type": "string"
+          },
+          "region": {
+            "default": "",
+            "title": "Region",
+            "type": "string"
+          }
+        },
+        "title": "ProviderConnection",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "oci-connector.connect_oci",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "disconnect_oci",
+      "description": "Disconnect an OCI tenancy: deletes the saved API signing key. Nothing in OCI itself is changed.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "oci.provider.disconnected"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "description": "The connection id to disconnect, from list_connections.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "connection_id"
+        ],
+        "title": "DisconnectOciParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "deleted": {
+            "default": false,
+            "title": "Deleted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "DeleteResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "oci-connector.disconnect_oci",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_connections",
+      "description": "List the connected Oracle Cloud Infrastructure tenancies.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "description": "Explicit empty params model -- V17 disallows untyped handlers.",
+        "properties": {},
+        "title": "NoParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ProviderConnection": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "default": "",
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "connected": {
+                "default": false,
+                "title": "Connected",
+                "type": "boolean"
+              },
+              "detail": {
+                "default": "",
+                "title": "Detail",
+                "type": "string"
+              },
+              "tenancy_ocid": {
+                "default": "",
+                "title": "Tenancy Ocid",
+                "type": "string"
+              },
+              "region": {
+                "default": "",
+                "title": "Region",
+                "type": "string"
+              }
+            },
+            "title": "ProviderConnection",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "connections": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ProviderConnection"
+            },
+            "title": "Connections",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ProviderConnectionList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_virtual_machines",
+      "description": "List Compute instances in the connected OCI tenancy, optionally filtered to a compartment.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListInstancesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "ComputeInstance": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "display_name": {
+                "default": "",
+                "title": "Display Name",
+                "type": "string"
+              },
+              "shape": {
+                "default": "",
+                "title": "Shape",
+                "type": "string"
+              },
+              "lifecycle_state": {
+                "default": "",
+                "title": "Lifecycle State",
+                "type": "string"
+              },
+              "availability_domain": {
+                "default": "",
+                "title": "Availability Domain",
+                "type": "string"
+              },
+              "time_created": {
+                "default": "",
+                "title": "Time Created",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "ComputeInstance",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instances": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/ComputeInstance"
+            },
+            "title": "Instances",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "ComputeInstanceList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "get_virtual_machine",
+      "description": "Read one Compute instance in full.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "The Compute instance's OCID.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "InstanceResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "default": "",
+            "title": "Id",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "display_name": {
+            "default": "",
+            "title": "Display Name",
+            "type": "string"
+          },
+          "shape": {
+            "default": "",
+            "title": "Shape",
+            "type": "string"
+          },
+          "lifecycle_state": {
+            "default": "",
+            "title": "Lifecycle State",
+            "type": "string"
+          },
+          "availability_domain": {
+            "default": "",
+            "title": "Availability Domain",
+            "type": "string"
+          },
+          "time_created": {
+            "default": "",
+            "title": "Time Created",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "title": "ComputeInstance",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "start_virtual_machine",
+      "description": "Start a stopped Compute instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "oci.instance.started"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "The Compute instance's OCID.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "InstanceResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "action": {
+            "default": "",
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "InstanceActionResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "oci-connector.start_instance",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "stop_virtual_machine",
+      "description": "Stop a running Compute instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "oci.instance.stopped"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "The Compute instance's OCID.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "InstanceResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "action": {
+            "default": "",
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "InstanceActionResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "oci-connector.stop_instance",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "restart_virtual_machine",
+      "description": "Restart (reset) a Compute instance.",
+      "action_type": "write",
+      "chain_callable": true,
+      "effects": [
+        "oci.instance.restarted"
+      ],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "instance_id": {
+            "description": "The Compute instance's OCID.",
+            "title": "Instance Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "instance_id"
+        ],
+        "title": "InstanceResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instance_id": {
+            "default": "",
+            "title": "Instance Id",
+            "type": "string"
+          },
+          "action": {
+            "default": "",
+            "title": "Action",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "InstanceActionResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "oci-connector.restart_instance",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_storage_accounts",
+      "description": "List Object Storage buckets in the connected OCI tenancy's namespace.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListBucketsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "StorageBucket": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "namespace": {
+                "default": "",
+                "title": "Namespace",
+                "type": "string"
+              },
+              "storage_tier": {
+                "default": "",
+                "title": "Storage Tier",
+                "type": "string"
+              },
+              "time_created": {
+                "default": "",
+                "title": "Time Created",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "StorageBucket",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "buckets": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/StorageBucket"
+            },
+            "title": "Buckets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "StorageBucketList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "get_storage_account",
+      "description": "Read one Object Storage bucket's metadata in full.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "bucket_name": {
+            "description": "The Object Storage bucket's name.",
+            "title": "Bucket Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bucket_name"
+        ],
+        "title": "BucketResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "name": {
+            "default": "",
+            "title": "Name",
+            "type": "string"
+          },
+          "namespace": {
+            "default": "",
+            "title": "Namespace",
+            "type": "string"
+          },
+          "storage_tier": {
+            "default": "",
+            "title": "Storage Tier",
+            "type": "string"
+          },
+          "time_created": {
+            "default": "",
+            "title": "Time Created",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "StorageBucket",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_blob_containers",
+      "description": "List objects inside one Object Storage bucket, optionally filtered by name prefix.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "bucket_name": {
+            "description": "The Object Storage bucket's name.",
+            "title": "Bucket Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bucket_name"
+        ],
+        "title": "BucketResourceParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "StorageObject": {
+            "properties": {
+              "id": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "integer"
+                  }
+                ],
+                "title": "Id"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "size": {
+                "default": 0,
+                "title": "Size",
+                "type": "integer"
+              },
+              "time_modified": {
+                "default": "",
+                "title": "Time Modified",
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ],
+            "title": "StorageObject",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "objects": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/StorageObject"
+            },
+            "title": "Objects",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "StorageObjectList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_sql_databases",
+      "description": "List Autonomous Database systems in the connected OCI tenancy/compartment.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListDatabasesParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "AutonomousDatabase": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "display_name": {
+                "default": "",
+                "title": "Display Name",
+                "type": "string"
+              },
+              "db_workload": {
+                "default": "",
+                "title": "Db Workload",
+                "type": "string"
+              },
+              "lifecycle_state": {
+                "default": "",
+                "title": "Lifecycle State",
+                "type": "string"
+              },
+              "cpu_core_count": {
+                "default": 0,
+                "title": "Cpu Core Count",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "AutonomousDatabase",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "databases": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/AutonomousDatabase"
+            },
+            "title": "Databases",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "AutonomousDatabaseList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_iam_users",
+      "description": "List IAM users configured in the connected OCI tenancy.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListIamParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "IamUser": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              },
+              "time_created": {
+                "default": "",
+                "title": "Time Created",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "IamUser",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "users": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/IamUser"
+            },
+            "title": "Users",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IamUserList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_role_assignments",
+      "description": "List IAM groups configured in the connected OCI tenancy -- OCI's IAM-equivalent to role assignments.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListIamParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "IamGroup": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "default": "",
+                "title": "Description",
+                "type": "string"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "name": {
+                "default": "",
+                "title": "Name",
+                "type": "string"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "IamGroup",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "groups": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/IamGroup"
+            },
+            "title": "Groups",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "IamGroupList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "list_metric_alerts",
+      "description": "List Monitoring alarms configured in the connected OCI tenancy/compartment.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "ListAlarmsParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "$defs": {
+          "MonitoringAlarm": {
+            "properties": {
+              "id": {
+                "default": "",
+                "title": "Id",
+                "type": "string"
+              },
+              "title": {
+                "title": "Title",
+                "type": "string"
+              },
+              "kind": {
+                "default": "",
+                "title": "Kind",
+                "type": "string"
+              },
+              "subtitle": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Subtitle"
+              },
+              "description": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Description"
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Status"
+              },
+              "url": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "default": null,
+                "title": "Url"
+              },
+              "display_name": {
+                "default": "",
+                "title": "Display Name",
+                "type": "string"
+              },
+              "severity": {
+                "default": "",
+                "title": "Severity",
+                "type": "string"
+              },
+              "is_enabled": {
+                "default": false,
+                "title": "Is Enabled",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "title"
+            ],
+            "title": "MonitoringAlarm",
+            "type": "object",
+            "x-sdl": "entity"
+          }
+        },
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "alarms": {
+            "default": [],
+            "items": {
+              "$ref": "#/$defs/MonitoringAlarm"
+            },
+            "title": "Alarms",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "MonitoringAlarmList",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "query_costs",
+      "description": "Read OCI Usage/Cost data for the connected tenancy over a time window.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          },
+          "time_start": {
+            "description": "ISO 8601 start timestamp, e.g. 2026-08-01T00:00:00Z.",
+            "title": "Time Start",
+            "type": "string"
+          },
+          "time_end": {
+            "description": "ISO 8601 end timestamp, e.g. 2026-08-24T00:00:00Z.",
+            "title": "Time End",
+            "type": "string"
+          }
+        },
+        "required": [
+          "time_start",
+          "time_end"
+        ],
+        "title": "GetUsageParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "time_start": {
+            "default": "",
+            "title": "Time Start",
+            "type": "string"
+          },
+          "time_end": {
+            "default": "",
+            "title": "Time End",
+            "type": "string"
+          },
+          "items": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "UsageResult",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    },
+    {
+      "name": "get_cloud_overview",
+      "description": "Value-add report: one-glance OCI tenancy health snapshot -- Compute instance counts by status, Object Storage bucket count, and Autonomous Database count.",
+      "action_type": "read",
+      "chain_callable": true,
+      "effects": [],
+      "id_projection": "",
+      "params_schema": {
+        "properties": {
+          "connection_id": {
+            "default": "",
+            "description": "Which connected OCI tenancy to use; omit to use the only/most recent one.",
+            "title": "Connection Id",
+            "type": "string"
+          }
+        },
+        "title": "GetCloudOverviewParams",
+        "type": "object"
+      },
+      "return_schema": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              }
+            ],
+            "title": "Id"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "kind": {
+            "default": "",
+            "title": "Kind",
+            "type": "string"
+          },
+          "subtitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Subtitle"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Description"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Status"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Url"
+          },
+          "instances_running": {
+            "default": 0,
+            "title": "Instances Running",
+            "type": "integer"
+          },
+          "instances_stopped": {
+            "default": 0,
+            "title": "Instances Stopped",
+            "type": "integer"
+          },
+          "bucket_count": {
+            "default": 0,
+            "title": "Bucket Count",
+            "type": "integer"
+          },
+          "autonomous_db_count": {
+            "default": 0,
+            "title": "Autonomous Db Count",
+            "type": "integer"
+          },
+          "month_to_date_cost": {
+            "default": "",
+            "title": "Month To Date Cost",
+            "type": "string"
+          },
+          "currency": {
+            "default": "USD",
+            "title": "Currency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "title"
+        ],
+        "title": "CloudOverview",
+        "type": "object",
+        "x-sdl": "entity"
+      },
+      "event": "",
+      "background": false,
+      "long_running": false,
+      "scopes": [],
+      "owner_chat_tool": "oci-connector"
+    }
+  ],
+  "signals": [],
+  "schedules": [],
+  "required_scopes": [],
+  "icon_size_bytes": 3178,
+  "lifecycle": {
+    "health_check": {
+      "interval_sec": 60
+    }
+  },
+  "secrets": [
+    {
+      "name": "oci_connections",
+      "description": "Your connected OCI tenancies -- stored as a JSON array, one entry per tenancy, each with its own tenancy_ocid, user_ocid, fingerprint, private_key (PEM), region, compartment_ocid and a friendly label. Managed through connect_oci / disconnect_oci -- you should not need to edit this directly.",
+      "required": true,
+      "write_mode": "both",
+      "max_bytes": 65536,
+      "scope": "user",
+      "rotation_hint_days": 90
+    }
+  ],
+  "panels": [
+    {
+      "panel_id": "secrets",
+      "slot": "right",
+      "title": "Secrets",
+      "tree": {},
+      "icon": "KeyRound",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "oci_sidebar",
+      "slot": "left",
+      "title": "Oracle Cloud Infrastructure",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": false
+    },
+    {
+      "panel_id": "oci_center",
+      "slot": "center",
+      "title": "Oracle Cloud Infrastructure",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "oci_connect_help",
+      "slot": "center",
+      "title": "How do I set this up?",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    },
+    {
+      "panel_id": "oci_settings",
+      "slot": "center",
+      "title": "OCI -- App settings",
+      "tree": {},
+      "icon": "",
+      "refresh": "manual",
+      "center_overlay": true
+    }
+  ]
+}
