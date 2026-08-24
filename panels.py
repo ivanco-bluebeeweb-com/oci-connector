@@ -11,8 +11,8 @@ only in the "App settings" screen (panels_settings.py). The one secondary
 "App settings" button is always the LAST element at the bottom of the
 sidebar.
 
-WHY 5 FIELDS (tenancy OCID, user OCID, fingerprint, private key, region),
-UNLIKE GCP'S SINGLE JSON-KEY FIELD.
+WHY 6 FIELDS (tenancy OCID, user OCID, fingerprint, private key, region,
+compartment), UNLIKE GCP'S SINGLE JSON-KEY FIELD.
 
 Unlike GCP's Service Account (one downloadable JSON file), OCI's API
 signing key setup gives the user each of these values SEPARATELY across
@@ -21,11 +21,12 @@ fingerprint + key from the API Keys page) -- there is no single file to
 paste. The form asks for each explicitly, matching how OCI's own SDK
 config file (~/.oci/config) is structured.
 
-Per Vlad's standing rule: every input carries its own label (not just a
-placeholder), placeholders are contextually specific, and the form
-container is stretched to the full width of the left sidebar with its
-contents stretched to fill it. The sidebar carries NO instructions that
-duplicate the "How do I set this up?" modal.
+Per Vlad's standing rule: every input carries its own label (as a
+ui.Text(variant="caption") sitting directly above it -- ui.Input itself
+has no `label` prop, only `param_name`/`placeholder`/`value`), placeholders
+are contextually specific, and the form/section stacks are stretched with
+align="stretch" so inputs fill the left sidebar's width. The sidebar
+carries NO instructions that duplicate the "How do I set this up?" modal.
 """
 from __future__ import annotations
 
@@ -62,47 +63,58 @@ def _connections_section(connections: list[dict]) -> ui.UINode:
     return ui.Stack(direction="v", gap=2, children=children)
 
 
+def _field(label: str, node: ui.UINode) -> ui.UINode:
+    return ui.Stack(direction="v", gap=1, align="stretch", children=[
+        ui.Text(label, variant="caption"),
+        node,
+    ])
+
+
 def _connect_section() -> ui.UINode:
-    return ui.Stack(direction="v", gap=3, full_width=True, children=[
+    return ui.Stack(direction="v", gap=3, align="stretch", children=[
         ui.Text("Connect a tenancy", variant="heading"),
-        ui.Stack(direction="v", gap=2, full_width=True, children=[
-            ui.Input(
-                label="Tenancy OCID", param_name="tenancy_ocid",
-                placeholder="ocid1.tenancy.oc1..aaaaaaaa...",
-            ),
-            ui.Input(
-                label="User OCID", param_name="user_ocid",
-                placeholder="ocid1.user.oc1..aaaaaaaa...",
-            ),
-            ui.Input(
-                label="Fingerprint", param_name="fingerprint",
-                placeholder="aa:bb:cc:dd:ee:ff:...",
-            ),
-            ui.Input(
-                label="Private key (PEM)", param_name="private_key",
-                input_type="password", multiline=True,
-                placeholder="-----BEGIN PRIVATE KEY-----",
-            ),
-            ui.Input(
-                label="Home region", param_name="region",
-                placeholder="us-ashburn-1",
-            ),
-            ui.Input(
-                label="Compartment OCID (optional)", param_name="compartment_ocid",
-                placeholder="Leave empty to use the tenancy root compartment",
-            ),
-        ]),
-        ui.Button(
-            "Verify and connect", variant="primary", full_width=True,
-            on_click=ui.Call("connect_oci"),
+        ui.Form(
+            action="connect_oci",
+            submit_label="Verify and connect",
+            children=[
+                _field("Tenancy OCID", ui.Input(
+                    param_name="tenancy_ocid",
+                    placeholder="ocid1.tenancy.oc1..aaaaaaaa...",
+                )),
+                _field("User OCID", ui.Input(
+                    param_name="user_ocid",
+                    placeholder="ocid1.user.oc1..aaaaaaaa...",
+                )),
+                _field("Fingerprint", ui.Input(
+                    param_name="fingerprint",
+                    placeholder="aa:bb:cc:dd:ee:ff:...",
+                )),
+                _field("Private key (PEM)", ui.Textarea(
+                    param_name="private_key",
+                    placeholder="-----BEGIN PRIVATE KEY-----",
+                )),
+                _field("Home region", ui.Input(
+                    param_name="region",
+                    placeholder="us-ashburn-1",
+                )),
+                _field("Compartment OCID (optional)", ui.Input(
+                    param_name="compartment_ocid",
+                    placeholder="Leave empty to use the tenancy root compartment",
+                )),
+                _field("Label (optional)", ui.Input(
+                    param_name="label",
+                    placeholder="e.g. Production tenancy",
+                )),
+            ],
         ),
     ])
 
 
-@ext.panel("oci_sidebar", slot="left", title="Oracle Cloud Infrastructure")
+@ext.panel("oci_sidebar", slot="left", title="Oracle Cloud Infrastructure",
+           default_width=320, min_width=260, max_width=420)
 async def oci_sidebar_panel(ctx, **kwargs) -> object:
     connections = await h._load_connections(ctx)
-    content = ui.Stack(direction="v", gap=4, full_width=True, children=[
+    content = ui.Stack(direction="v", gap=4, align="stretch", children=[
         _connections_section(connections),
         ui.Divider(),
         _connect_section(),
@@ -114,7 +126,7 @@ async def oci_sidebar_panel(ctx, **kwargs) -> object:
 
 @ext.panel("oci_center", slot="center", title="Oracle Cloud Infrastructure", center_overlay=True)
 async def oci_center_panel(ctx, **kwargs) -> object:
-    return ui.Stack(direction="v", align="center", justify="center", full_height=True, children=[
+    return ui.Stack(direction="v", align="center", justify="center", children=[
         ui.Text("Nothing to show here", variant="body"),
     ])
 
