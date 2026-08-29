@@ -1,6 +1,6 @@
 {
   "manifest_schema_version": 3,
-  "sdk_version": "5.11.0",
+  "sdk_version": "5.13.0",
   "app_id": "oci-connector",
   "version": "0.1.0",
   "name": "Oracle Cloud Infrastructure",
@@ -2835,7 +2835,10 @@
       "tree": {},
       "icon": "",
       "refresh": "manual",
-      "center_overlay": false
+      "center_overlay": false,
+      "default_width": 320,
+      "min_width": 260,
+      "max_width": 420
     },
     {
       "panel_id": "oci_center",
