@@ -40,6 +40,8 @@ class ProviderConnection(sdl.Entity):
 
 
 class ProviderConnectionList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     connections: list[ProviderConnection] = []
 
 
@@ -48,6 +50,7 @@ class DisconnectOciParams(BaseModel):
 
 
 class DeleteResult(sdl.Entity):
+    title: str = ""
     deleted: bool = False
     id: str = ""
 
@@ -66,6 +69,8 @@ class GetCloudOverviewParams(ConnectionIdParams):
 
 
 class CloudOverview(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instances_running: int = 0
     instances_stopped: int = 0
     bucket_count: int = 0
@@ -80,6 +85,7 @@ class CloudOverview(sdl.Entity):
 
 
 class ComputeInstance(sdl.Entity):
+    title: str = ""
     id: str = ""
     display_name: str = ""
     shape: str = ""
@@ -89,6 +95,8 @@ class ComputeInstance(sdl.Entity):
 
 
 class ComputeInstanceList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instances: list[ComputeInstance] = []
 
 
@@ -101,6 +109,8 @@ class InstanceResourceParams(ConnectionIdParams):
 
 
 class InstanceActionResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     instance_id: str = ""
     action: str = ""
 
@@ -111,6 +121,8 @@ class InstanceActionResult(sdl.Entity):
 
 
 class StorageBucket(sdl.Entity):
+    id: str = ""
+    title: str = ""
     name: str = ""
     namespace: str = ""
     storage_tier: str = ""
@@ -118,6 +130,8 @@ class StorageBucket(sdl.Entity):
 
 
 class StorageBucketList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     buckets: list[StorageBucket] = []
 
 
@@ -130,12 +144,16 @@ class BucketResourceParams(ConnectionIdParams):
 
 
 class StorageObject(sdl.Entity):
+    id: str = ""
+    title: str = ""
     name: str = ""
     size: int = 0
     time_modified: str = ""
 
 
 class StorageObjectList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     objects: list[StorageObject] = []
 
 
@@ -145,6 +163,7 @@ class StorageObjectList(sdl.Entity):
 
 
 class AutonomousDatabase(sdl.Entity):
+    title: str = ""
     id: str = ""
     display_name: str = ""
     db_workload: str = ""
@@ -153,6 +172,8 @@ class AutonomousDatabase(sdl.Entity):
 
 
 class AutonomousDatabaseList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     databases: list[AutonomousDatabase] = []
 
 
@@ -166,6 +187,7 @@ class ListDatabasesParams(ConnectionIdParams):
 
 
 class IamUser(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     description: str = ""
@@ -173,16 +195,21 @@ class IamUser(sdl.Entity):
 
 
 class IamUserList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     users: list[IamUser] = []
 
 
 class IamGroup(sdl.Entity):
+    title: str = ""
     id: str = ""
     name: str = ""
     description: str = ""
 
 
 class IamGroupList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     groups: list[IamGroup] = []
 
 
@@ -196,6 +223,7 @@ class ListIamParams(ConnectionIdParams):
 
 
 class MonitoringAlarm(sdl.Entity):
+    title: str = ""
     id: str = ""
     display_name: str = ""
     severity: str = ""
@@ -203,6 +231,8 @@ class MonitoringAlarm(sdl.Entity):
 
 
 class MonitoringAlarmList(sdl.Entity):
+    id: str = ""
+    title: str = ""
     alarms: list[MonitoringAlarm] = []
 
 
@@ -221,6 +251,8 @@ class GetUsageParams(ConnectionIdParams):
 
 
 class UsageResult(sdl.Entity):
+    id: str = ""
+    title: str = ""
     time_start: str = ""
     time_end: str = ""
     items: list[dict] = []
