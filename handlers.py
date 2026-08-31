@@ -119,7 +119,7 @@ async def connect_oci(ctx, params: ConnectOciParams) -> ActionResult:
     return ActionResult.success(ProviderConnection(
         id=conn_id, title=record["title"], connected=True,
         detail=detail, tenancy_ocid=params.tenancy_ocid, region=params.region,
-    ))
+    ), summary="Oci connected.")
 
 
 @chat.function(
@@ -138,7 +138,7 @@ async def disconnect_oci(ctx, params: DisconnectOciParams) -> ActionResult:
     if len(remaining) == len(connections):
         return ActionResult.error("No connection found with that id.")
     await _save_connections(ctx, remaining)
-    return ActionResult.success(DeleteResult(deleted=True, id=params.connection_id))
+    return ActionResult.success(DeleteResult(deleted=True, id=params.connection_id), summary="Oci disconnected.")
 
 
 @chat.function(
@@ -158,7 +158,7 @@ async def list_connections(ctx, params: NoParams) -> ActionResult:
         )
         for c in connections
     ]
-    return ActionResult.success(ProviderConnectionList(connections=items))
+    return ActionResult.success(ProviderConnectionList(connections=items), summary="Connections listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -191,7 +191,7 @@ async def list_virtual_machines(ctx, params: ListInstancesParams) -> ActionResul
         )
         for i in items
     ]
-    return ActionResult.success(ComputeInstanceList(instances=out))
+    return ActionResult.success(ComputeInstanceList(instances=out), summary="Virtual machines listed.")
 
 
 @chat.function(
@@ -215,7 +215,7 @@ async def get_virtual_machine(ctx, params: InstanceResourceParams) -> ActionResu
         shape=i.get("shape", ""), lifecycle_state=i.get("lifecycleState", ""),
         availability_domain=i.get("availabilityDomain", ""),
         time_created=i.get("timeCreated", ""),
-    ))
+    ), summary="Virtual machine retrieved.")
 
 
 @chat.function(
@@ -236,7 +236,7 @@ async def start_virtual_machine(ctx, params: InstanceResourceParams) -> ActionRe
         await oci.instance_action(ctx, _creds(conn), params.instance_id, "START")
     except oci.ProviderError as e:
         return _err("Couldn't start that Compute instance", e)
-    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="start_requested"))
+    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="start_requested"), summary="Virtual machine start requested.")
 
 
 @chat.function(
@@ -257,7 +257,7 @@ async def stop_virtual_machine(ctx, params: InstanceResourceParams) -> ActionRes
         await oci.instance_action(ctx, _creds(conn), params.instance_id, "STOP")
     except oci.ProviderError as e:
         return _err("Couldn't stop that Compute instance", e)
-    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="stop_requested"))
+    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="stop_requested"), summary="Virtual machine stop requested.")
 
 
 @chat.function(
@@ -278,7 +278,7 @@ async def restart_virtual_machine(ctx, params: InstanceResourceParams) -> Action
         await oci.instance_action(ctx, _creds(conn), params.instance_id, "RESET")
     except oci.ProviderError as e:
         return _err("Couldn't restart that Compute instance", e)
-    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="restart_requested"))
+    return ActionResult.success(InstanceActionResult(instance_id=params.instance_id, action="restart_requested"), summary="Virtual machine restart requested.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ async def list_storage_accounts(ctx, params: ListBucketsParams) -> ActionResult:
                        storage_tier=b.get("storageTier", ""), time_created=b.get("timeCreated", ""))
         for b in items
     ]
-    return ActionResult.success(StorageBucketList(buckets=out))
+    return ActionResult.success(StorageBucketList(buckets=out), summary="Storage accounts listed.")
 
 
 @chat.function(
@@ -333,7 +333,7 @@ async def get_storage_account(ctx, params: BucketResourceParams) -> ActionResult
     return ActionResult.success(StorageBucket(
         name=b.get("name", ""), namespace=namespace,
         storage_tier=b.get("storageTier", ""), time_created=b.get("timeCreated", ""),
-    ))
+    ), summary="Storage account retrieved.")
 
 
 @chat.function(
@@ -358,7 +358,7 @@ async def list_blob_containers(ctx, params: BucketResourceParams) -> ActionResul
         StorageObject(name=o.get("name", ""), size=o.get("size", 0), time_created=o.get("timeCreated", ""))
         for o in items
     ]
-    return ActionResult.success(StorageObjectList(objects=out))
+    return ActionResult.success(StorageObjectList(objects=out), summary="Blob containers listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -390,7 +390,7 @@ async def list_sql_databases(ctx, params: ListDatabasesParams) -> ActionResult:
         )
         for d in items
     ]
-    return ActionResult.success(AutonomousDatabaseList(databases=out))
+    return ActionResult.success(AutonomousDatabaseList(databases=out), summary="Sql databases listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -419,7 +419,7 @@ async def list_iam_users(ctx, params: ListIamParams) -> ActionResult:
                 lifecycle_state=u.get("lifecycleState", ""))
         for u in items
     ]
-    return ActionResult.success(IamUserList(users=out))
+    return ActionResult.success(IamUserList(users=out), summary="Iam users listed.")
 
 
 @chat.function(
@@ -443,7 +443,7 @@ async def list_role_assignments(ctx, params: ListIamParams) -> ActionResult:
                   lifecycle_state=g.get("lifecycleState", ""))
         for g in items
     ]
-    return ActionResult.success(IamGroupList(groups=out))
+    return ActionResult.success(IamGroupList(groups=out), summary="Role assignments listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -474,7 +474,7 @@ async def list_metric_alerts(ctx, params: ListAlarmsParams) -> ActionResult:
         )
         for a in items
     ]
-    return ActionResult.success(MonitoringAlarmList(alarms=out))
+    return ActionResult.success(MonitoringAlarmList(alarms=out), summary="Metric alerts listed.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -502,7 +502,7 @@ async def query_costs(ctx, params: GetUsageParams) -> ActionResult:
     total = sum(float(i.get("computedAmount", 0) or 0) for i in items)
     return ActionResult.success(UsageResult(
         total_cost=str(total), currency="USD", line_item_count=len(items),
-    ))
+    ), summary="Query costs done.")
 
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -547,4 +547,4 @@ async def get_cloud_overview(ctx, params: GetCloudOverviewParams) -> ActionResul
     return ActionResult.success(CloudOverview(
         instances_running=running, instances_stopped=stopped,
         bucket_count=bucket_count, autonomous_database_count=db_count,
-    ))
+    ), summary="Cloud overview retrieved.")
